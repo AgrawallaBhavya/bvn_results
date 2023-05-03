@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --job-name=fetch_sweep_15
+#SBATCH --output train_logs/fetch_sweep_15_%j.out
+#SBATCH --error train_logs/fetch_sweep_15_%j.err
+#SBATCH --cpus-per-task=1
+
+source activate bvn
+
+
+cd /home/gridsan/bagrawalla/bvn2/bvn-master/fetch
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+export ML_LOGGER_ROOT=$(pwd)/results
+python experiments/bvn/train_15.py
