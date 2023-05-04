@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     for i, deps in sweep.items():
         #os.environ["ML_LOGGER_ROOT"] = f"{os.getcwd()}/results/bvn/" + str(deps['Args.use_critic_fourier_features']) + f"/{deps['Args.env_name']}/{deps['Args.state_fourier_features']}/{deps['Args.b_scale']}/{deps['Args.seed']}"
-        os.environ["ML_LOGGER_ROOT"] = f"{os.getcwd()}/results/bvn/" + str(deps['Args.use_critic_fourier_features']) + f"-512-share_state/{deps['Args.env_name']}/{deps['Args.seed']}"
+        os.environ["ML_LOGGER_ROOT"] = f"{os.getcwd()}/results/bvn/" + str(deps['Args.use_critic_fourier_features']) + f"-only_f/{deps['Args.env_name']}/{deps['Args.seed']}"
         main(deps)
 
 

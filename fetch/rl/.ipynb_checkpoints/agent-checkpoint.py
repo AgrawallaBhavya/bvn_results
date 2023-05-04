@@ -53,6 +53,8 @@ class StateAsymMetricCritic(nn.Module):
     '''
     def __init__(self, env_params, args):
         super().__init__()
+        self.fourier_only_phi = args.fourier_only_phi
+        self.fourier_only_f = args.fourier_only_f
         self.act_limit = env_params['action_max']
         self.use_critic_fourier_features = args.use_critic_fourier_features
         self.share_state_features = args.share_state_features
@@ -66,23 +68,46 @@ class StateAsymMetricCritic(nn.Module):
         phi_input = env_params['obs'] + env_params['goal']
         if args.use_critic_fourier_features:
             if args.share_state_features == False:
-                self.state_lff_f = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
-                self.state_lff_phi = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
+                if args.fourier_only_f: 
+                    self.state_lff_f = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
+                elif args.fourier_only_phi:
+                    self.state_lff_phi = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
+                else :
+                    self.state_lff_f = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
+                    self.state_lff_phi = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
             else:
                 self.state_lff = LFF(self.obs_dim, args.state_fourier_features, args.b_scale)
                 
-            self.action_lff = LFF(self.act_dim, args.action_fourier_features, args.b_scale)
-            self.goal_lff = LFF(self.goal_dim,args.goal_fourier_features, args.b_scale)
+            if not args.fourier_only_phi:
+                self.action_lff = LFF(self.act_dim, args.action_fourier_features, args.b_scale)
+            if not args.fourier_only_f:
+                self.goal_lff = LFF(self.goal_dim,args.goal_fourier_features, args.b_scale)
             
             f_input = args.state_fourier_features + args.action_fourier_features
             phi_input = args.state_fourier_features + args.goal_fourier_features
             
-            self.f = net_utils.mlp(
-                [f_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
-                activation=args.activ)
-            self.phi = net_utils.mlp(
-                [phi_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
-                activation=args.activ)
+            if args.fourier_only_f:
+                self.f = net_utils.mlp(
+                    [f_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
+                    activation=args.activ)
+                self.phi = net_utils.mlp(
+                    [env_params['obs'] + env_params['goal']] + [args.hid_size] * (args.n_hids) + [embed_dim],
+                    activation=args.activ)
+            elif args.fourier_only_phi:
+                self.f = net_utils.mlp(
+                    [env_params['obs'] + env_params['action']] + [args.hid_size] * (args.n_hids) + [embed_dim],
+                    activation=args.activ)
+                self.phi = net_utils.mlp(
+                    [phi_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
+                    activation=args.activ)
+            else:
+                self.f = net_utils.mlp(
+                    [f_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
+                    activation=args.activ)
+                self.phi = net_utils.mlp(
+                    [phi_input] + [args.hid_size] * (args.n_hids - 1) + [embed_dim],
+                    activation=args.activ)
+                
         else:
             self.f = net_utils.mlp(
                 [f_input] + [args.hid_size] * args.n_hids + [embed_dim],
@@ -110,7 +135,7 @@ class StateAsymMetricCritic(nn.Module):
         return q_values
 
     def f_embed(self, obses, actions):
-        if self.use_critic_fourier_features:
+        if self.use_critic_fourier_features and (not self.fourier_only_phi):
             obses = self.state_lff_f(obses) if (not self.share_state_features) else self.state_lff(obses)
             actions_normalized = self.action_lff(actions/ self.act_limit)
         else:
@@ -121,10 +146,9 @@ class StateAsymMetricCritic(nn.Module):
         return f_embeds
 
     def state_phi_embed(self, obses, goals):
-        if self.use_critic_fourier_features:
+        if self.use_critic_fourier_features and (not self.fourier_only_f):
             obses = self.state_lff_phi(obses) if (not self.share_state_features) else self.state_lff(obses)
             goals = self.goal_lff(goals)
-            
         phi_inputs = torch.cat([obses, goals], dim=-1)
         phi_embeds = self.phi(phi_inputs)
         return phi_embeds

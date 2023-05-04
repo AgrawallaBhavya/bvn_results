@@ -4,8 +4,8 @@
 #SBATCH --job-name=fetch_sweep_1
 #SBATCH --output train_logs/fetch_sweep_1_%j.out
 #SBATCH --error train_logs/fetch_sweep_1_%j.err
-#SBATCH --cpus-per-task=20
-#SBATCH --mem=20G
+#SBATCH --cpus-per-task=30
+#SBATCH --mem=30G
 
 source activate bvn
 

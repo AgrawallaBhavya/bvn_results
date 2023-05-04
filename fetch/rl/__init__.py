@@ -71,15 +71,18 @@ class Args(PrefixProto):
     n_test_rollouts = 15
     demo_length = 20
     
-    use_critic_fourier_features = False
+    use_critic_fourier_features = True
     use_actor_fourier_features = False
     fourier_features = "LFF"
-    state_fourier_features = 512#128#512#256
-    action_fourier_features = 512#128#512#256
-    goal_fourier_features = 512#128#512#256
-    share_state_features = True#False
+    state_fourier_features = 256#128#512#256
+    action_fourier_features = 256#128#512#256
+    goal_fourier_features = 256#128#512#256
+    share_state_features = False#False
     b_scale = 0.001
-    disable_target = False
+    disable_target_net = False
+    fourier_only_f = True
+    fourier_only_phi = False
+    only_state_fourier = False
     logdir = None
 
 

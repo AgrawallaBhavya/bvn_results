@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "experiments/bvn/train_0.py", line 28, in <module>
+    main(deps)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/__init__.py", line 93, in main
+    algo.run()
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/algo/core.py", line 244, in run
+    self.collect_experience(epoch, train_agent=True)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/algo/core.py", line 200, in collect_experience
+    self.agent_optimize(epoch)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/algo/core.py", line 165, in agent_optimize
+    self.learner.update(batch, self.disable_target_net)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/learner.py", line 87, in update
+    loss_critic = self.critic_loss(batch, disable_target_net)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/learner.py", line 51, in critic_loss
+    q_next, _ = self.agent.forward(o2, bg, q_target=False, pi_target=False)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/agent.py", line 402, in forward
+    return q_net(inputs, pis), pis
+  File "/home/gridsan/bagrawalla/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/agent.py", line 106, in forward
+    f_embeds = self.f_embed(obses, actions)
+  File "/home/gridsan/bagrawalla/bvn2/bvn-master/fetch/rl/agent.py", line 120, in f_embed
+    if self.use_critic_fourier_features and (not args.fourier_only_phi):
+NameError: name 'args' is not defined
