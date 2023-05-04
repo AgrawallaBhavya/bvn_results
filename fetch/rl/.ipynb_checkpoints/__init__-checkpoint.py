@@ -74,9 +74,9 @@ class Args(PrefixProto):
     use_critic_fourier_features = False
     use_actor_fourier_features = False
     fourier_features = "LFF"
-    state_fourier_features = 256#128#512#256
-    action_fourier_features = 256#128#512#256
-    goal_fourier_features = 256#128#512#256
+    state_fourier_features = 512#128#512#256
+    action_fourier_features = 512#128#512#256
+    goal_fourier_features = 512#128#512#256
     share_state_features = True#False
     b_scale = 0.001
     disable_target = False
